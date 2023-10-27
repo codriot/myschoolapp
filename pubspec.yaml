@@ -39,7 +39,9 @@ dependencies:
   #web packets
   http: ^1.1.0
   html: ^0.15.4
+  
   excel: ^2.1.0
+  url_launcher: ^6.2.1
 
 dev_dependencies:
   flutter_test:

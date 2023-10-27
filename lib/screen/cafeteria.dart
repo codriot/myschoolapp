@@ -2,46 +2,53 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+void main() => runApp(const CafeteriaView());
+
+class CafeteriaView extends StatefulWidget {
+  const CafeteriaView({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<CafeteriaView> createState() => _CafeteriaViewState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _CafeteriaViewState extends State<CafeteriaView> {
   var data;
   var url = Uri.parse(
       "https://www.balikesir.edu.tr/site/icerik/saglik-kultur-ve-spor-daire-baskanligi-3411");
 
-  Future getData() async {
-    var res = await http.get(url);
-    final body = res.body;
-    final document = parser.parse(body);
-    var response = document.getElementsByClassName("panel-body").toString();
+  Future getdata() async {
+    var resp = await http.get(url);
+    final body = resp.body;
+    var document = parser.parse(resp.body);
+    var response = document
+        .getElementsByClassName('panel-body')[0]
+        .getElementsByTagName("table")[0]
+        .getElementsByTagName("tbody")[0]
+        .getElementsByTagName("tr")[0]
+        .getElementsByTagName("td")[1]
+        .getElementsByTagName("span")[0]
+        .getElementsByTagName("strong")[0]
+        .toString();
 
     setState(() {
       data = response;
-      print("calisiyo");
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: SafeArea(
-        child: Center(
+    return MaterialApp(
+      title: 'Material App',
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Material App Bar'),
+        ),
+        body: Center(
           child: Column(
             children: [
-              Expanded(
-                child: Text(data.toString()),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: ElevatedButton(
-                    onPressed: () => getData(), child: Text("veri getir")),
-              )
+              Text(data ?? 'No data'),
+              ElevatedButton(
+                  onPressed: () => getdata(), child: const Text('Get Food')),
             ],
           ),
         ),
