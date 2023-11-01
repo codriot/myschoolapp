@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
+import 'package:myschoolapp/product/customcard.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class YemekhaneWebScrapping extends StatefulWidget {
+  const YemekhaneWebScrapping({super.key});
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<YemekhaneWebScrapping> createState() => _YemekhaneWebScrappingState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _YemekhaneWebScrappingState extends State<YemekhaneWebScrapping> {
   List<Article> articles = [];
 
   @override
@@ -46,11 +47,22 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(12),
         itemCount: articles.length,
         itemBuilder: (BuildContext context, int index) {
-          final article = articles[index];
+          final articleDay = articles[index];
+          final articleYemekBir = articles[++index];
+          final articleYemekIki = articles[++index];
+          final articleYemekUc = articles[++index];
+          final articleYemekDort = articles[++index];
 
-          return ListTile(
-            title: Text(article.title),
-          );
+          return CustomKart(
+              mainTitle: articleDay.title,
+              firstTitle: articleYemekBir.title,
+              firstSubtitle: articleYemekIki.title,
+              SecondTitle: articleYemekUc.title,
+              secondSubtitle: articleYemekDort.title);
+
+          // return ListTile(
+          //   title: Text(article.title),
+          // );
         },
       ),
     );
@@ -59,6 +71,5 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class Article {
   final String title;
-
   Article({required this.title});
 }

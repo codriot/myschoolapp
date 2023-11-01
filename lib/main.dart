@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:myschoolapp/screen/homescreen.dart';
+import 'package:myschoolapp/screen/lessons.dart';
 
-import 'package:myschoolapp/screen/yemekhane_url_launcher_view.dart';
+import 'package:myschoolapp/screen/yemekhane_web_scrapping_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: HomeScreen(),
+      home: const YemekhaneWebScrapping(),
     );
   }
 }
