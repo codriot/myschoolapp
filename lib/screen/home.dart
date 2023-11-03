@@ -33,6 +33,7 @@ class _HomeState extends State<Home> {
           backgroundColor: renkler.bottombarColor,
           unselectedItemColor: Colors.white.withOpacity(0.5),
           currentIndex: selectedindex,
+          duration: Duration(milliseconds: 400),
           onTap: (i) => setState(() => selectedindex = i),
           items: [
             SalomonBottomBarItem(
