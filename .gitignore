@@ -1,3 +1,7 @@
+#web data settings
+lib/core/web_data/*
+
+
 # Miscellaneous
 *.class
 *.log

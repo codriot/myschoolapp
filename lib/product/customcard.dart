@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myschoolapp/product/color.dart';
 
 /*
 TODO:  DÜZENELENEBİLİRLER
@@ -11,7 +12,7 @@ class CustomKart extends StatelessWidget {
   final String mainTitle;
   final String firstTitle;
   final String firstSubtitle;
-  final String? SecondTitle;
+  final String? secondTitle;
   final String? secondSubtitle;
   final Color backgroundColor;
   final Color textColor;
@@ -21,9 +22,9 @@ class CustomKart extends StatelessWidget {
       required this.mainTitle,
       required this.firstTitle,
       required this.firstSubtitle,
-      this.backgroundColor = Colors.white,
-      this.textColor = Colors.black,
-      this.SecondTitle,
+      this.backgroundColor = renkler.cardColor,
+      this.textColor = renkler.textColor,
+      this.secondTitle,
       this.secondSubtitle});
 
   @override
@@ -55,8 +56,8 @@ class CustomKart extends StatelessWidget {
                     style: TextStyle(color: textColor, fontSize: 14.0)),
                 Text(firstSubtitle,
                     style: TextStyle(color: textColor, fontSize: 14.0)),
-                SecondTitle != null
-                    ? Text(SecondTitle!,
+                secondTitle != null
+                    ? Text(secondTitle!,
                         style: TextStyle(color: textColor, fontSize: 14.0))
                     : const Text("-"),
                 secondSubtitle != null
