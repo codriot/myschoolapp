@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'package:myschoolapp/screen/lessons.dart';
+import 'package:myschoolapp/screen/home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,12 +13,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: LessonsView(),
+      debugShowCheckedModeBanner: false,
+      home: const Home(),
     );
   }
 }

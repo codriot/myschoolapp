@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myschoolapp/product/color.dart';
 
 /*
 TODO:  DÜZENELENEBİLİRLER
@@ -7,24 +8,24 @@ Kartın kenarlarını yuvarlatın.
 Kartın köşelerine gölgeler ekleyin.
 Kartın içeriğini daha fazla düzenleyin.
 */
-class Kart extends StatelessWidget {
-  final String daytitle;
-  final String derstitle;
-  final String timetitle;
-  final String? derstitle2;
-  final String? timetitle2;
+class CustomKart extends StatelessWidget {
+  final String mainTitle;
+  final String firstTitle;
+  final String firstSubtitle;
+  final String? secondTitle;
+  final String? secondSubtitle;
   final Color backgroundColor;
   final Color textColor;
 
-  const Kart(
+  const CustomKart(
       {super.key,
-      required this.daytitle,
-      required this.derstitle,
-      required this.timetitle,
-      this.backgroundColor = Colors.white,
-      this.textColor = Colors.black,
-      this.derstitle2,
-      this.timetitle2});
+      required this.mainTitle,
+      required this.firstTitle,
+      required this.firstSubtitle,
+      this.backgroundColor = renkler.cardColor,
+      this.textColor = renkler.textColor,
+      this.secondTitle,
+      this.secondSubtitle});
 
   @override
   Widget build(BuildContext context) {
@@ -49,18 +50,18 @@ class Kart extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(daytitle,
+                Text(mainTitle,
                     style: TextStyle(color: textColor, fontSize: 18.0)),
-                Text(derstitle,
+                Text(firstTitle,
                     style: TextStyle(color: textColor, fontSize: 14.0)),
-                Text(timetitle,
+                Text(firstSubtitle,
                     style: TextStyle(color: textColor, fontSize: 14.0)),
-                derstitle2 != null
-                    ? Text(derstitle2!,
+                secondTitle != null
+                    ? Text(secondTitle!,
                         style: TextStyle(color: textColor, fontSize: 14.0))
                     : const Text("-"),
-                timetitle2 != null
-                    ? Text(timetitle2!,
+                secondSubtitle != null
+                    ? Text(secondSubtitle!,
                         style: TextStyle(color: textColor, fontSize: 14.0))
                     : const Text("-"),
               ],

@@ -1,51 +1,114 @@
 import 'package:flutter/material.dart';
+import 'package:myschoolapp/product/color.dart';
 import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' as parser;
+import 'package:html/dom.dart' as dom;
+import 'package:myschoolapp/core/model/lessons_model.dart';
+import 'package:myschoolapp/core/web_data/link.dart';
+import 'package:myschoolapp/product/customcard.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
+class YemekhaneWebScrapping extends StatefulWidget {
+  const YemekhaneWebScrapping({super.key});
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<YemekhaneWebScrapping> createState() => _YemekhaneWebScrappingState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  var data;
-  var url = Uri.parse(
-      "https://www.balikesir.edu.tr/site/icerik/saglik-kultur-ve-spor-daire-baskanligi-3411");
+class _YemekhaneWebScrappingState extends State<YemekhaneWebScrapping> {
+  List<GununYemekleri> articles = [];
+  int f = 0;
 
-  Future getData() async {
-    var res = await http.get(url);
-    final body = res.body;
-    final document = parser.parse(body);
-    var response = document.getElementsByClassName("panel-body").toString();
+  @override
+  void initState() {
+    getdata();
+    super.initState();
+  }
+
+  Future getdata() async {
+    List<String> articlesFood = [];
+    final response = await http.get(Links.yemekhaneUrl);
+    dom.Document html = dom.Document.html(response.body);
+    final titles = html
+        .querySelectorAll(Links.webscrappinghtml)
+        .map((e) => e.innerHtml.trim())
+        .toList();
 
     setState(() {
-      data = response;
-      print("calisiyo");
+      articlesFood = List.generate(
+        titles.length,
+        (index) => titles[index],
+      );
     });
+
+    //yemek listesini dolduruyorum
+    for (var i = 0; i < 5; i++) {
+      articles.add(
+        GununYemekleri(
+            gun: Gunler.values[i].name.toString().toUpperCase(),
+            yemekBir: articlesFood[f++],
+            yemekIki: articlesFood[f++],
+            yemekUc: articlesFood[f++],
+            yemekDort: articlesFood[f++]),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            children: [
-              Expanded(
-                child: Text(data.toString()),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: ElevatedButton(
-                    onPressed: () => getData(), child: Text("veri getir")),
-              )
-            ],
-          ),
+      backgroundColor: renkler.backgroundColor,
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () async {
+            await launchUrl(
+              Links.yemekhaneUrl,
+              mode: LaunchMode.inAppWebView,
+            );
+          },
+          icon: const Icon(Icons.open_in_new),
         ),
+        title: const Text('Yemekhane'),
+        centerTitle: true,
+        backgroundColor: renkler.backgroundColor,
+        surfaceTintColor: renkler.backgroundColor,
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                articles.clear();
+                getdata();
+              });
+            },
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(12),
+        itemCount: articles.length,
+        itemBuilder: (BuildContext context, int index) {
+          return CustomKart(
+              mainTitle: articles[index].gun,
+              firstTitle: articles[index].yemekBir,
+              firstSubtitle: articles[index].yemekIki,
+              secondTitle: articles[index].yemekUc,
+              secondSubtitle: articles[index].yemekDort);
+        },
       ),
     );
   }
+}
+
+class GununYemekleri {
+  final String gun;
+  final String yemekBir;
+  final String yemekIki;
+  final String yemekUc;
+  final String yemekDort;
+
+  GununYemekleri(
+      {required this.gun,
+      required this.yemekBir,
+      required this.yemekIki,
+      required this.yemekUc,
+      required this.yemekDort});
 }
