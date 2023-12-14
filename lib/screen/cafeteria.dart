@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:myschoolapp/core/indicator/indicator.dart';
 import 'package:myschoolapp/core/model/cafeteria_model.dart';
 import 'package:myschoolapp/product/color.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
-import 'package:myschoolapp/core/model/lessons_model.dart';
 import 'package:myschoolapp/core/web_data/link.dart';
 import 'package:myschoolapp/product/customcard.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -30,7 +30,7 @@ class _YemekhaneWebScrappingState extends State<YemekhaneWebScrapping> {
     dom.Document html = dom.Document.html(response.body);
     final titles = html
         .querySelectorAll(Links.webscrappinghtml)
-        .map((e) => e.innerHtml.trim())
+        .map((e) => e.text.trim())
         .toList();
 
     setState(() {
@@ -44,57 +44,61 @@ class _YemekhaneWebScrappingState extends State<YemekhaneWebScrapping> {
     for (var i = 0; i < 5; i++) {
       articles.add(
         GununYemekleri(
-            gun: Gunler.values[i].name.toString().toUpperCase(),
+            gun: articlesFood[f++].toUpperCase(),
             yemekBir: articlesFood[f++],
             yemekIki: articlesFood[f++],
             yemekUc: articlesFood[f++],
             yemekDort: articlesFood[f++]),
       );
     }
+    f = 0;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: renkler.backgroundColor,
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () async {
-            await launchUrl(
-              Links.yemekhaneUrl,
-              mode: LaunchMode.inAppWebView,
-            );
-          },
-          icon: const Icon(Icons.open_in_new),
-        ),
-        title: const Text('Yemekhane'),
-        centerTitle: true,
         backgroundColor: renkler.backgroundColor,
-        surfaceTintColor: renkler.backgroundColor,
-        actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                articles.clear();
-                getdata();
-              });
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () async {
+              await launchUrl(
+                Links.yemekhaneUrl,
+                mode: LaunchMode.inAppWebView,
+              );
             },
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.open_in_new),
           ),
-        ],
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(12),
-        itemCount: articles.length,
-        itemBuilder: (BuildContext context, int index) {
-          return CustomKart(
-              mainTitle: articles[index].gun,
-              firstTitle: articles[index].yemekBir,
-              firstSubtitle: articles[index].yemekIki,
-              secondTitle: articles[index].yemekUc,
-              secondSubtitle: articles[index].yemekDort);
-        },
-      ),
-    );
+          title: const Text('Yemekhane'),
+          centerTitle: true,
+          backgroundColor: renkler.backgroundColor,
+          surfaceTintColor: renkler.backgroundColor,
+          actions: [
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  articles.clear();
+                  getdata();
+                });
+              },
+              icon: const Icon(Icons.refresh),
+            ),
+          ],
+        ),
+        body: SafeArea(
+            child: CheckMarkIndicator(
+          // TODO: CheckMarkIndicator is not working use it
+          child: ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: articles.length,
+            itemBuilder: (BuildContext context, int index) {
+              return CustomKart(
+                  mainTitle: articles[index].gun,
+                  firstTitle: articles[index].yemekBir,
+                  firstSubtitle: articles[index].yemekIki,
+                  secondTitle: articles[index].yemekUc,
+                  secondSubtitle: articles[index].yemekDort);
+            },
+          ),
+        )));
   }
 }
