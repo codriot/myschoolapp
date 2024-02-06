@@ -40,6 +40,9 @@ dependencies:
   html: ^0.15.4
   url_launcher: ^6.2.1
 
+  #db
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
 
   #bottom bar
   salomon_bottom_bar: ^3.3.2
@@ -55,7 +58,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  
+  hive_generator: ^1.1.1
+  build_runner: ^2.1.4
 
   flutter_lints: ^2.0.0
 

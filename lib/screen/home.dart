@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:myschoolapp/product/color.dart';
 import 'package:myschoolapp/screen/cafeteria.dart';
 import 'package:myschoolapp/screen/exam.dart';
+import 'package:myschoolapp/screen/lesson2.dart';
 import 'package:myschoolapp/screen/lessons.dart';
 
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -24,7 +25,7 @@ class _HomeState extends State<Home> {
     });
   }
 
-  final List _page = [LessonsView(), YemekhaneWebScrapping(), ExamView()];
+  final List _page = [LessonsView2(), YemekhaneWebScrapping(), ExamView()];
 
   @override
   Widget build(BuildContext context) {

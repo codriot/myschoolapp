@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
-enum Gunler {
+enum daysOfWeek {
   pazartesi,
   sali,
   carsamba,
@@ -18,18 +18,18 @@ class Ders {
       {this.ikinci_ders_adi, this.ikinci_dersin_zamani});
 }
 
-extension GunlerDersEklentisi on Gunler {
+extension GunlerDersEklentisi on daysOfWeek {
   Ders dersdata() {
     switch (this) {
-      case Gunler.pazartesi:
+      case daysOfWeek.pazartesi:
         return pazartesiDers();
-      case Gunler.sali:
+      case daysOfWeek.sali:
         return saliDers();
-      case Gunler.carsamba:
+      case daysOfWeek.carsamba:
         return carsambaDers();
-      case Gunler.persembe:
+      case daysOfWeek.persembe:
         return persembeDers();
-      case Gunler.cuma:
+      case daysOfWeek.cuma:
         return cumaDers();
     }
   }
