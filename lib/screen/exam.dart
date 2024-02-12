@@ -1,82 +1,160 @@
-import 'package:flutter/material.dart';
-import 'package:myschoolapp/core/model/exam_model.dart';
-import 'package:myschoolapp/product/color.dart';
+// ignore_for_file: use_build_context_synchronously
 
-class ExamView extends StatelessWidget {
-  ExamView({super.key});
-  final List<ExamDate> examDates = [
-    ExamDate(exam: 'PAZARTESİ', renk: renkler.backgroundColor),
-    ExamDate(exam: 'veri tabanı', time: '11:00', place: 'M9301-9305'),
-    ExamDate(exam: 'SALI', renk: renkler.backgroundColor),
-    ExamDate(exam: 'bilgisayar ağları', time: '09:00', place: 'amfi'),
-    ExamDate(exam: 'ÇARŞAMBA', renk: renkler.backgroundColor),
-    ExamDate(exam: "pyhton", time: '09.30', place: 'amfi'),
-    ExamDate(exam: "biçimsel diller", time: '13.00', place: 'amfi'),
-    ExamDate(exam: 'PERŞEMBE', renk: renkler.backgroundColor),
-    ExamDate(exam: "diferansiyel denklemler", time: '11.00', place: 'amfi'),
-    ExamDate(exam: "iş sağlığı", time: '14.30', place: 'M9301-9305'),
-    ExamDate(
-        exam: "bilgisayar organizasyonu", time: '16.00', place: 'M9301-9305'),
-    ExamDate(exam: 'CUMA', renk: renkler.backgroundColor),
-    ExamDate(exam: "Ekoloji", time: '15.00', place: 'bilinmiyor'),
-  ];
+import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:myschoolapp/product/color.dart';
+import 'package:myschoolapp/product/customcard.dart';
+import 'package:myschoolapp/core/model/lessons_model.dart';
+import 'package:myschoolapp/product/function/mytextfield.dart';
+
+class ExamView extends StatefulWidget {
+  const ExamView({super.key});
+
+  @override
+  State<ExamView> createState() => _ExamViewState();
+}
+
+class _ExamViewState extends State<ExamView> {
+  final _mybox = Hive.box('myBox');
+  @override
+  void initState() {
+    super.initState();
+    _initializeBox();
+  }
+
+  void _initializeBox() async {
+    for (var day in DaysOfWeek.values) {
+      String dayString = "${day.toString().split('.').last}Sınav";
+      if (_mybox.get(dayString) == null) {
+        await _mybox.put(dayString, [
+          ['ders1', '12:00']
+        ]);
+      }
+    }
+  }
+
+  String? selectedDay;
+  void updatelist() {
+    List<LessonRow> rows = [
+      LessonRow(
+          lessonNameController: TextEditingController(),
+          lessonTimeController: TextEditingController())
+    ];
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Sınav Programı'),
+              content: SingleChildScrollView(
+                child: Column(children: [
+                  DropdownButton<String>(
+                      hint: const Text('Gün'),
+                      value: selectedDay,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedDay = newValue;
+                        });
+                      },
+                      items: DaysOfWeek.values
+                          .map<DropdownMenuItem<String>>((DaysOfWeek value) {
+                        return DropdownMenuItem<String>(
+                          value: "${value.name}Sınav",
+                          child: Text(value.name),
+                        );
+                      }).toList()),
+                  ...rows,
+                ]),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () async {
+                      await _mybox.put(selectedDay, []);
+                    },
+                    child: const Text(
+                      "Sil",
+                    )),
+                TextButton(
+                  onPressed: () async {
+                    List ders = [];
+                    for (var i = 0; i < rows.length; i++) {
+                      String name = rows[i].lessonNameController.text;
+                      String time = rows[i].lessonTimeController.text;
+                      if (name.isEmpty || time.isEmpty) {
+                        continue;
+                      }
+                      ders.add([name, time]);
+                      print('Ders Adı: $name, Ders Saati: $time');
+                    }
+                    // Bilgileri kaydet ve dialogu kapat
+                    await _mybox.put(selectedDay, ders);
+                    setState(() {});
+                    print(_mybox.get(selectedDay));
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Kaydet'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: renkler.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: renkler.backgroundColor,
-        surfaceTintColor: renkler.backgroundColor,
-        title: const Text(
-          'Sınav Programı',
-          style: TextStyle(color: renkler.textColor),
-        ),
-        centerTitle: true,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          updatelist();
+          setState(() {});
+        },
+        child: const Icon(Icons.add),
       ),
-      body: ListView.builder(
-        itemCount: examDates.length,
-        itemBuilder: (BuildContext context, int index) {
-          return examDates[index].renk == renkler.backgroundColor
-              ? Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    examDates[index].exam,
-                    style: const TextStyle(
-                        color: renkler.textColor,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  ),
-                )
-              : Card(
-                  color: renkler.cardColor,
-                  child: ListTile(
-                    title: Text(
-                      examDates[index].exam,
-                      style: const TextStyle(
-                        color: renkler.textColor,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    trailing: Text(
-                      examDates[index].time ?? '',
-                      style: const TextStyle(
-                        color: renkler.textColor,
-                        fontSize: 15,
-                      ),
-                    ),
-                    subtitle: Text(
-                      examDates[index].place ?? '',
-                      style: const TextStyle(
-                        color: renkler.textColor,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                );
+      appBar: _myappbar(),
+      body: ValueListenableBuilder(
+        valueListenable: _mybox.listenable(),
+        builder: (context, Box box, _) {
+          if (box.keys.isEmpty) {
+            return const Text('Box is empty.');
+          } else {
+            return ListView.builder(
+              itemCount: DaysOfWeek.values.length, // Doğru itemCount'u kullanın
+              itemBuilder: (BuildContext context, int index) {
+                if (box.keys.isNotEmpty) {
+                  print(box.keys);
+                  // Kontrol eklendi
+                  String key = "${DaysOfWeek.values[index].name}Sınav";
+                  List lessons = List.from(_mybox.get(key));
+                  return CustomKart(
+                    mainTitle: DaysOfWeek.values[index].name.toUpperCase(),
+                    lessons: lessons,
+                  );
+                } else {
+                  return const Text(
+                      'Key not found'); // Boş liste durumunu işleyin
+                }
+              },
+            );
+          }
         },
       ),
+    );
+  }
+
+  AppBar _myappbar() {
+    return AppBar(
+      backgroundColor: renkler.backgroundColor,
+      surfaceTintColor: renkler.backgroundColor,
+      title: const Text(
+        'Sınav Programı',
+        style: TextStyle(color: renkler.textColor),
+      ),
+      centerTitle: true,
     );
   }
 }

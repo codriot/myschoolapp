@@ -6,6 +6,8 @@ import 'package:myschoolapp/screen/cafeteria.dart';
 import 'package:myschoolapp/screen/exam.dart';
 import 'package:myschoolapp/screen/lesson2.dart';
 import 'package:myschoolapp/screen/lessons.dart';
+import 'package:myschoolapp/screen/universityobs.dart';
+import 'package:myschoolapp/screen/universityweb.dart';
 
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
@@ -25,7 +27,13 @@ class _HomeState extends State<Home> {
     });
   }
 
-  final List _page = [LessonsView2(), YemekhaneWebScrapping(), ExamView()];
+  final List _page = [
+    LessonsView2(),
+    ExamView(),
+    YemekhaneWebScrapping(),
+    UniWeb(),
+    ObsWeb()
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -34,22 +42,25 @@ class _HomeState extends State<Home> {
       bottomNavigationBar: SalomonBottomBar(
           backgroundColor: renkler.bottombarColor,
           unselectedItemColor: Colors.white.withOpacity(0.5),
+          selectedItemColor: Colors.white,
           currentIndex: selectedindex,
           duration: Duration(milliseconds: 400),
           onTap: (i) => setState(() => selectedindex = i),
           items: [
             SalomonBottomBarItem(
-                icon: Icon(Icons.school_rounded),
-                title: Text("Dersler"),
-                selectedColor: Colors.white),
+              icon: Icon(Icons.school_rounded),
+              title: Text("Ders"),
+            ),
             SalomonBottomBarItem(
-                icon: Icon(Icons.food_bank_rounded),
-                title: Text("Yemekhane"),
-                selectedColor: Colors.white),
+              icon: Icon(Icons.draw_rounded),
+              title: Text("Sınav"),
+            ),
             SalomonBottomBarItem(
-                icon: Icon(Icons.draw_rounded),
-                title: Text("Vize"),
-                selectedColor: Colors.white),
+              icon: Icon(Icons.food_bank_rounded),
+              title: Text("Yemekhane"),
+            ),
+            SalomonBottomBarItem(icon: Icon(Icons.web), title: Text("Web")),
+            SalomonBottomBarItem(icon: Icon(Icons.person), title: Text("Obs"))
           ]),
     );
   }

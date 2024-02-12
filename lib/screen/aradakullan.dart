@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class aradakullan extends StatefulWidget {
   const aradakullan({super.key});
@@ -8,24 +9,22 @@ class aradakullan extends StatefulWidget {
 }
 
 class _aradakullanState extends State<aradakullan> {
-  List<TextField> textFields = [];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          ...textFields,
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                textFields.add(TextField());
-              });
-            },
-            child: const Text('Yeni Textfield Ekle'),
-          ),
-        ],
-      ),
-    );
+        body: ElevatedButton(
+      onPressed: () async {
+        var box = await Hive.openBox('myBox');
+        await box.put('pazartesi', ["pazartesi", "ders1"]);
+        await box.put('salı', ["ders2", "11"]);
+        await box.put('çarşamba', ["ders3", "12"]);
+        await box.put('perşembe', ["ders4", "13"]);
+        await box.put('cuma', ["ders5", "14"]);
+
+        print(box.get('pazartesi'));
+        await box.close();
+      },
+      child: Text('Add to box'),
+    ));
   }
 }

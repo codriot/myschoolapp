@@ -1,8 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:myschoolapp/product/color.dart';
 import 'package:myschoolapp/product/customcard.dart';
 import 'package:myschoolapp/core/model/lessons_model.dart';
+import 'package:myschoolapp/product/function/mytextfield.dart';
 
 class LessonsView2 extends StatefulWidget {
   const LessonsView2({super.key});
@@ -12,31 +15,30 @@ class LessonsView2 extends StatefulWidget {
 }
 
 class _LessonsView2State extends State<LessonsView2> {
-  String? selectedDay;
-  List<TextField> textFields = [];
   final _mybox = Hive.box('myBox');
+  @override
+  void initState() {
+    super.initState();
+    _initializeBox();
+  }
+
+  void _initializeBox() async {
+    for (var day in DaysOfWeek.values) {
+      String dayString = day.toString().split('.').last;
+      if (_mybox.get(dayString) == null) {
+        await _mybox.put(dayString, [
+          ['ders1', '12:00']
+        ]);
+      }
+    }
+  }
+
+  String? selectedDay;
   void updatelist() {
-    List<Widget> rows = [
-      const Row(
-        children: [
-          Expanded(
-            flex: 7,
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Ders Adı',
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Ders Saati',
-              ),
-            ),
-          ),
-        ],
-      ),
+    List<LessonRow> rows = [
+      LessonRow(
+          lessonNameController: TextEditingController(),
+          lessonTimeController: TextEditingController())
     ];
 
     showDialog(
@@ -56,49 +58,56 @@ class _LessonsView2State extends State<LessonsView2> {
                           selectedDay = newValue;
                         });
                       },
-                      items: daysOfWeek.values
-                          .map<DropdownMenuItem<String>>((daysOfWeek value) {
+                      items: DaysOfWeek.values
+                          .map<DropdownMenuItem<String>>((DaysOfWeek value) {
                         return DropdownMenuItem<String>(
                           value: value.name,
                           child: Text(value.name),
                         );
                       }).toList()),
                   ...rows,
+                  const SizedBox(height: 5),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        rows.add(
+                          LessonRow(
+                            lessonNameController: TextEditingController(),
+                            lessonTimeController: TextEditingController(),
+                          ),
+                        );
+                      });
+                    },
+                    child: const Text('Ders Ekle'),
+                  ),
                 ]),
               ),
               actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      rows.add(
-                        const Row(
-                          children: [
-                            Expanded(
-                              flex: 7,
-                              child: TextField(
-                                decoration: InputDecoration(
-                                  hintText: 'Ders Adı',
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 3,
-                              child: TextField(
-                                decoration: InputDecoration(
-                                  hintText: 'Ders Saati',
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    });
-                  },
-                  child: const Text('Ders Ekle'),
-                ),
                 TextButton(
-                  onPressed: () {
+                    // style: TextButton.styleFrom(backgroundColor: Colors.red),
+                    onPressed: () async {
+                      await _mybox.put(selectedDay, []);
+                    },
+                    child: const Text(
+                      "Sil",
+                      // style: TextStyle(color: Colors.white),
+                    )),
+                TextButton(
+                  onPressed: () async {
+                    List ders = [];
+                    for (var i = 0; i < rows.length; i++) {
+                      String name = rows[i].lessonNameController.text;
+                      String time = rows[i].lessonTimeController.text;
+                      if (name.isEmpty || time.isEmpty) {
+                        continue;
+                      }
+                      ders.add([name, time]);
+                      print('Ders Adı: $name, Ders Saati: $time');
+                    }
                     // Bilgileri kaydet ve dialogu kapat
+                    await _mybox.put(selectedDay, ders);
+                    setState(() {});
+                    print(_mybox.get(selectedDay));
                     Navigator.pop(context);
                   },
                   child: const Text('Kaydet'),
@@ -123,20 +132,31 @@ class _LessonsView2State extends State<LessonsView2> {
         child: const Icon(Icons.add),
       ),
       appBar: _myappbar(),
-      body: ListView.builder(
-        itemCount: daysOfWeek.values.length,
-        itemBuilder: (BuildContext context, int index) {
-          return CustomKart(
-              mainTitle: daysOfWeek.values[index].name.toUpperCase(),
-              firstTitle:
-                  daysOfWeek.values[index].dersdata().dersadi.toLowerCase(),
-              firstSubtitle: daysOfWeek.values[index].dersdata().ders_zamani,
-              secondTitle: daysOfWeek.values[index]
-                  .dersdata()
-                  .ikinci_ders_adi
-                  ?.toLowerCase(),
-              secondSubtitle:
-                  daysOfWeek.values[index].dersdata().ikinci_dersin_zamani);
+      body: ValueListenableBuilder(
+        valueListenable: _mybox.listenable(),
+        builder: (context, Box box, _) {
+          if (box.keys.isEmpty) {
+            return const Text('Box is empty.');
+          } else {
+            return ListView.builder(
+              itemCount: DaysOfWeek.values.length, // Doğru itemCount'u kullanın
+              itemBuilder: (BuildContext context, int index) {
+                if (box.keys.isNotEmpty) {
+                  print(box.keys);
+                  // Kontrol eklendi
+                  String key = DaysOfWeek.values[index].name;
+                  List lessons = List.from(_mybox.get(key));
+                  return CustomKart(
+                    mainTitle: key.toUpperCase(),
+                    lessons: lessons,
+                  );
+                } else {
+                  return const Text(
+                      'Key not found'); // Boş liste durumunu işleyin
+                }
+              },
+            );
+          }
         },
       ),
     );

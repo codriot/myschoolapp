@@ -32,10 +32,12 @@ class CheckMarkStyle {
 class CheckMarkIndicator extends StatefulWidget {
   final Widget child;
   final CheckMarkStyle style;
+  final Future<void> Function()? onRefresh;
 
   const CheckMarkIndicator({
     super.key,
     required this.child,
+    required this.onRefresh,
     this.style = CheckMarkStyle.defaultStyle,
   });
 
@@ -54,7 +56,7 @@ class _CheckMarkIndicatorState extends State<CheckMarkIndicator>
   Widget build(BuildContext context) {
     return CustomMaterialIndicator(
       withRotation: false,
-      onRefresh: () => Future.delayed(const Duration(seconds: 2)),
+      onRefresh: widget.onRefresh!,
       durations: const RefreshIndicatorDurations(
         completeDuration: Duration(seconds: 2),
       ),

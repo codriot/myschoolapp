@@ -72,31 +72,28 @@ class _YemekhaneWebScrappingState extends State<YemekhaneWebScrapping> {
           centerTitle: true,
           backgroundColor: renkler.backgroundColor,
           surfaceTintColor: renkler.backgroundColor,
-          actions: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  articles.clear();
-                  getdata();
-                });
-              },
-              icon: const Icon(Icons.refresh),
-            ),
-          ],
         ),
         body: SafeArea(
             child: CheckMarkIndicator(
+          onRefresh: () async {
+            setState(() {
+              articles.clear();
+            });
+            await getdata();
+            await Future.delayed(const Duration(milliseconds: 550));
+          },
+
           // TODO: CheckMarkIndicator is not working use it
           child: ListView.builder(
             padding: const EdgeInsets.all(12),
             itemCount: articles.length,
             itemBuilder: (BuildContext context, int index) {
-              return CustomKart(
-                  mainTitle: articles[index].gun,
-                  firstTitle: articles[index].yemekBir,
-                  firstSubtitle: articles[index].yemekIki,
-                  secondTitle: articles[index].yemekUc,
-                  secondSubtitle: articles[index].yemekDort);
+              return CustomKart(mainTitle: articles[index].gun, lessons: [
+                [articles[index].yemekBir, ''],
+                [articles[index].yemekIki, ''],
+                [articles[index].yemekUc, ''],
+                [articles[index].yemekDort, ''],
+              ]);
             },
           ),
         )));
