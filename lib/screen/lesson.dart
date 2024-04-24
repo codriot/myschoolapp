@@ -8,17 +8,18 @@ import 'package:myschoolapp/core/model/lessons_model.dart';
 import 'package:myschoolapp/product/management/db_manager.dart';
 import 'package:myschoolapp/product/widget/lesson_dialog.dart';
 
-class ExamView extends StatefulWidget {
-  const ExamView({super.key});
+class LessonsView extends StatefulWidget {
+  const LessonsView({super.key});
+
   @override
-  State<ExamView> createState() => _ExamViewState();
+  State<LessonsView> createState() => _LessonsViewState();
 }
 
-class _ExamViewState extends State<ExamView> {
+class _LessonsViewState extends State<LessonsView> {
   @override
   void initState() {
     super.initState();
-    dbManager().initializeBox("Sınav");
+    dbManager().initializeBox("ders");
   }
 
   @override
@@ -26,11 +27,11 @@ class _ExamViewState extends State<ExamView> {
     return Scaffold(
       backgroundColor: renkler.backgroundColor,
       floatingActionButton: FloatingActionButton(
-        onPressed: () async => lessonDialog(context, key: "Sınav"),
+        onPressed: () async => lessonDialog(context, key: "ders"),
         child: const Icon(Icons.add),
       ),
       appBar: _myappbar(),
-      body: const _BuildBody(),
+      body: const _MyBody(),
     );
   }
 
@@ -39,7 +40,7 @@ class _ExamViewState extends State<ExamView> {
       backgroundColor: renkler.backgroundColor,
       surfaceTintColor: renkler.backgroundColor,
       title: const Text(
-        'Sınav Programı',
+        'Ders Programı',
         style: TextStyle(color: renkler.textColor),
       ),
       centerTitle: true,
@@ -47,8 +48,8 @@ class _ExamViewState extends State<ExamView> {
   }
 }
 
-class _BuildBody extends StatelessWidget {
-  const _BuildBody();
+class _MyBody extends StatelessWidget {
+  const _MyBody();
 
   @override
   Widget build(BuildContext context) {
@@ -58,25 +59,24 @@ class _BuildBody extends StatelessWidget {
         if (box.keys.isEmpty) {
           return const Text('Box is empty.');
         } else {
-          return _buildListview(box);
-        }
-      },
-    );
-  }
-
-  ListView _buildListview(Box<dynamic> box) {
-    return ListView.builder(
-      itemCount: DaysOfWeek.values.length,
-      itemBuilder: (BuildContext context, int index) {
-        if (box.keys.isNotEmpty) {
-          String key = "${DaysOfWeek.values[index].name}Sınav";
-          List lessons = List.from(dbManager.mybox.get(key) ?? []);
-          return CustomKart(
-            mainTitle: DaysOfWeek.values[index].name.toUpperCase(),
-            lessons: lessons,
+          return ListView.builder(
+            itemCount: DaysOfWeek.values.length, // Doğru itemCount'u kullanın
+            itemBuilder: (BuildContext context, int index) {
+              if (box.keys.isNotEmpty) {
+                String key = '${DaysOfWeek.values[index].name}ders';
+                if (dbManager.mybox.get(key) == null) {
+                  dbManager.mybox.put(key, []);
+                }
+                List lessons = List.from(dbManager.mybox.get(key));
+                return CustomKart(
+                  mainTitle: DaysOfWeek.values[index].name.toUpperCase(),
+                  lessons: lessons,
+                );
+              } else {
+                return const Text('Key not found');
+              }
+            },
           );
-        } else {
-          return const Text('Key not found');
         }
       },
     );

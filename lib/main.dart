@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myschoolapp/screen/aradakullan.dart';
 import 'package:myschoolapp/screen/home.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 

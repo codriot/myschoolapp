@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:myschoolapp/core/indicator/indicator.dart';
 import 'package:myschoolapp/core/model/cafeteria_model.dart';
@@ -5,7 +6,7 @@ import 'package:myschoolapp/product/color.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 import 'package:myschoolapp/core/web_data/link.dart';
-import 'package:myschoolapp/product/customcard.dart';
+import 'package:myschoolapp/product/widget/customcard.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class YemekhaneWebScrapping extends StatefulWidget {
@@ -25,33 +26,37 @@ class _YemekhaneWebScrappingState extends State<YemekhaneWebScrapping> {
   }
 
   Future getdata() async {
-    List<String> articlesFood = [];
-    final response = await http.get(Links.yemekhaneUrl);
-    dom.Document html = dom.Document.html(response.body);
-    final titles = html
-        .querySelectorAll(Links.webscrappinghtml)
-        .map((e) => e.text.trim())
-        .toList();
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult != ConnectivityResult.none) {
+      // I'm not connected to a network.
+      List<String> articlesFood = [];
+      final response = await http.get(Links.yemekhaneUrl);
+      dom.Document html = dom.Document.html(response.body);
+      final titles = html
+          .querySelectorAll(Links.webscrappinghtml)
+          .map((e) => e.text.trim())
+          .toList();
 
-    setState(() {
-      articlesFood = List.generate(
-        titles.length,
-        (index) => titles[index],
-      );
-    });
+      setState(() {
+        articlesFood = List.generate(
+          titles.length,
+          (index) => titles[index],
+        );
+      });
 
-    //yemek listesini dolduruyorum
-    for (var i = 0; i < 5; i++) {
-      articles.add(
-        GununYemekleri(
-            gun: articlesFood[f++].toUpperCase(),
-            yemekBir: articlesFood[f++],
-            yemekIki: articlesFood[f++],
-            yemekUc: articlesFood[f++],
-            yemekDort: articlesFood[f++]),
-      );
+      //yemek listesini dolduruyorum
+      for (var i = 0; i < 5; i++) {
+        articles.add(
+          GununYemekleri(
+              gun: articlesFood[f++].toUpperCase(),
+              yemekBir: articlesFood[f++],
+              yemekIki: articlesFood[f++],
+              yemekUc: articlesFood[f++],
+              yemekDort: articlesFood[f++]),
+        );
+      }
+      f = 0;
     }
-    f = 0;
   }
 
   @override

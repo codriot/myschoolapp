@@ -1,14 +1,12 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:myschoolapp/core/model/webview_model.dart';
 import 'package:myschoolapp/product/color.dart';
+import 'package:myschoolapp/screen/web_view_controller.dart';
 import 'package:myschoolapp/screen/cafeteria.dart';
 import 'package:myschoolapp/screen/exam.dart';
-import 'package:myschoolapp/screen/lesson2.dart';
-import 'package:myschoolapp/screen/lessons.dart';
-import 'package:myschoolapp/screen/universityobs.dart';
-import 'package:myschoolapp/screen/universityweb.dart';
-
+import 'package:myschoolapp/screen/lesson.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class Home extends StatefulWidget {
@@ -28,11 +26,18 @@ class _HomeState extends State<Home> {
   }
 
   final List _page = [
-    LessonsView2(),
+    LessonsView(),
     ExamView(),
     YemekhaneWebScrapping(),
-    UniWeb(),
-    ObsWeb()
+    // UniWeb(),
+    MyWebview(
+        link: WebviewModel(
+            url: "https://www.balikesir.edu.tr", title: "Universite Sayfası")),
+    // ObsWeb(),
+    MyWebview(
+        link: WebviewModel(
+            url: "https://obs.balikesir.edu.tr/oibs/ogrenci/login.aspx",
+            title: "Obs Ekranı"))
   ];
 
   @override
