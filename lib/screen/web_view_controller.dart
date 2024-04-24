@@ -21,6 +21,10 @@ class _MyWebviewState extends State<MyWebview> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(widget.link.title),
+      ),
       body: FutureBuilder<WebViewController>(
         future: _controllerWebview,
         builder: (context, snapshot) {
